@@ -1,13 +1,16 @@
-INSERT INTO STV202311139__DWH.dm_transactions(transaction_id, operation_id, trans_type_id, load_dt, load_src)
+INSERT INTO STV202311139__DWH.dm_transactions(transaction_id, operation_id, trans_type_id, trans_start_ts, load_dt, load_src)
 SELECT HASH(v.operation_id) AS transaction_id
      , v.operation_id::uuid AS operation_id
      , tt.trans_type_id
+     , v.transaction_dt AS trans_start_ts
      , now() AS load_dt
      , 'pg' AS load_src
   FROM (SELECT DISTINCT t.operation_id
-	     , t.transaction_type
+             , t.transaction_type
+             , t.transaction_dt
           FROM STV202311139__STAGING.transactions t
-         WHERE t.transaction_dt BETWEEN :dt1 AND :dt2
+         WHERE t.status = 'queued'
+           AND t.transaction_dt BETWEEN :dt1 AND :dt2
        ) v
   JOIN STV202311139__DWH.dm_trans_types tt
     ON tt.trans_type = v.transaction_type

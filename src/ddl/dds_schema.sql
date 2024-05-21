@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS STV202311139__DWH.dm_transactions (
     transaction_id int not null PRIMARY KEY ENABLED,
     operation_id uuid not null UNIQUE ENABLED,
     trans_type_id int not null REFERENCES STV202311139__DWH.dm_trans_types(trans_type_id),
+    trans_start_ts timestamp not null,
     load_dt timestamp not null,
     load_src varchar(20) not null
 )
