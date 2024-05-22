@@ -5,7 +5,7 @@ SELECT HASH(v.operation_id) AS transaction_id
      , v.transaction_dt AS trans_start_ts
      , now() AS load_dt
      , 'pg' AS load_src
-  FROM (SELECT DISTINCT t.operation_id::uuid AS operation_id
+  FROM (SELECT DISTINCT t.operation_id
              , t.transaction_type
              , t.transaction_dt
           FROM STV202311139__STAGING.transactions t

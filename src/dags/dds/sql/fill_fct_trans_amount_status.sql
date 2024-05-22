@@ -12,7 +12,7 @@ SELECT HASH(d.transaction_id, af.account_id, at.account_id, c.currency_id, t.tra
      , t.transaction_status
      , now() AS load_dt
      , 'pg' AS load_src
-  FROM (SELECT DISTINCT t.operation_id::uuid AS operation_id
+  FROM (SELECT DISTINCT t.operation_id
              , t.account_number_from
              , t.account_number_to  
              , t.transaction_dt
@@ -26,7 +26,7 @@ SELECT HASH(d.transaction_id, af.account_id, at.account_id, c.currency_id, t.tra
            AND t.transaction_dt BETWEEN :dt1 AND :dt2
        ) t
   JOIN STV202311139__DWH.dm_transactions d
-    ON d.operation_id = t.operation_id::uuid
+    ON d.operation_id = t.operation_id
   JOIN STV202311139__DWH.dm_accounts af
     ON af.account_number = t.account_number_from
   JOIN STV202311139__DWH.dm_accounts at

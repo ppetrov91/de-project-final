@@ -2,7 +2,7 @@ CREATE SCHEMA IF NOT EXISTS STV202311139__DWH;
 
 CREATE TABLE IF NOT EXISTS STV202311139__DWH.dm_currencies (
     currency_id int not null PRIMARY KEY ENABLED,
-    currency_code int not null UNIQUE ENABLED,
+    currency_code int not null,
     load_dt timestamp not null,
     load_src varchar(20) not null
 )
@@ -11,7 +11,7 @@ UNSEGMENTED ALL NODES;
 
 CREATE TABLE IF NOT EXISTS STV202311139__DWH.dm_accounts (
     account_id int not null PRIMARY KEY ENABLED,
-    account_number int not null UNIQUE ENABLED,
+    account_number int not null,
     load_dt timestamp not null,
     load_src varchar(20) not null
 )
@@ -22,7 +22,7 @@ GROUP BY calendar_hierarchy_day(load_dt::date, 3, 2);
 
 CREATE TABLE IF NOT EXISTS STV202311139__DWH.dm_trans_types (
     trans_type_id int not null PRIMARY KEY ENABLED,
-    trans_type varchar(30) not null UNIQUE ENABLED,
+    trans_type varchar(30) not null,
     load_dt timestamp not null,
     load_src varchar(20) not null
 )
@@ -31,7 +31,7 @@ UNSEGMENTED ALL NODES;
 
 CREATE TABLE IF NOT EXISTS STV202311139__DWH.dm_transactions (
     transaction_id int not null PRIMARY KEY ENABLED,
-    operation_id uuid not null UNIQUE ENABLED,
+    operation_id varchar(60) not null,
     trans_type_id int not null REFERENCES STV202311139__DWH.dm_trans_types(trans_type_id),
     trans_start_ts timestamp not null,
     load_dt timestamp not null,
@@ -44,7 +44,7 @@ GROUP BY calendar_hierarchy_day(load_dt::date, 3, 2);
 
 CREATE TABLE IF NOT EXISTS STV202311139__DWH.dm_countries (
     country_id int not null PRIMARY KEY ENABLED,
-    country_name varchar(30) not null UNIQUE ENABLED,
+    country_name varchar(30) not null,
     load_dt timestamp not null,
     load_src varchar(20) not null
 )
