@@ -1,7 +1,7 @@
 INSERT INTO STV202311139__DWH.fct_trans_amount_status(id, transaction_id, account_from, account_to, 
                                                       currency_id, country_id, transaction_dt,
                                                       amount, transaction_status, load_dt, load_src)
-SELECT HASH(d.transaction_id, af.account_id, at.account_id, c.currency_id, d.transaction_status) AS id
+SELECT HASH(d.transaction_id, af.account_id, at.account_id, c.currency_id, t.transaction_status) AS id
      , d.transaction_id
      , af.account_id AS account_from
      , at.account_id AS account_to
@@ -38,5 +38,5 @@ SELECT HASH(d.transaction_id, af.account_id, at.account_id, c.currency_id, d.tra
  WHERE NOT EXISTS (SELECT 1
                      FROM STV202311139__DWH.fct_trans_amount fta
                     WHERE fta.id = HASH(d.transaction_id, af.account_id, at.account_id, 
-			                c.currency_id, d.transaction_status)
+			                c.currency_id, t.transaction_status)
                   );
