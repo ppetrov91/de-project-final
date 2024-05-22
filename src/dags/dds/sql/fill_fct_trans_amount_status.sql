@@ -36,7 +36,7 @@ SELECT HASH(d.transaction_id, af.account_id, at.account_id, c.currency_id, t.tra
   JOIN STV202311139__DWH.dm_countries dc
     ON dc.country_name = t.country 
  WHERE NOT EXISTS (SELECT 1
-                     FROM STV202311139__DWH.fct_trans_amount fta
+                     FROM STV202311139__DWH.fct_trans_amount_status fta
                     WHERE fta.id = HASH(d.transaction_id, af.account_id, at.account_id, 
 			                c.currency_id, t.transaction_status)
                   );
