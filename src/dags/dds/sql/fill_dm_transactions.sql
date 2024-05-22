@@ -11,6 +11,8 @@ SELECT HASH(v.operation_id) AS transaction_id
           FROM STV202311139__STAGING.transactions t
          WHERE t.status = 'queued'
            AND t.transaction_dt BETWEEN :dt1 AND :dt2
+	   AND t.account_number_from > 0
+	   AND t.account_number_to > 0
        ) v
   JOIN STV202311139__DWH.dm_trans_types tt
     ON tt.trans_type = v.transaction_type
