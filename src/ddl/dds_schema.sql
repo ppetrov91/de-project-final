@@ -22,7 +22,7 @@ GROUP BY calendar_hierarchy_day(load_dt::date, 3, 2);
 
 CREATE TABLE IF NOT EXISTS STV202311139__DWH.dm_trans_types (
     trans_type_id int not null PRIMARY KEY ENABLED,
-    trans_type varchar(30) not null,
+    trans_type varchar(30) not null UNIQUE ENABLED,
     load_dt timestamp not null,
     load_src varchar(20) not null
 )
@@ -44,7 +44,7 @@ GROUP BY calendar_hierarchy_day(load_dt::date, 3, 2);
 
 CREATE TABLE IF NOT EXISTS STV202311139__DWH.dm_countries (
     country_id int not null PRIMARY KEY ENABLED,
-    country_name varchar(30) not null,
+    country_name varchar(30) not null UNIQUE ENABLED,
     load_dt timestamp not null,
     load_src varchar(20) not null
 )
@@ -65,7 +65,7 @@ SEGMENTED BY HASH(currency_id, currency_id_with, update_dt) ALL NODES
 PARTITION BY update_dt::date
 GROUP BY calendar_hierarchy_day(update_dt::date, 3, 2);
 
-CREATE TABLE IF NOT EXISTS STV202311139__DWH.fct_trans_amount (
+CREATE TABLE IF NOT EXISTS STV202311139__DWH.fct_trans_amount_status (
     id int not null primary key enabled,
     transaction_id int not null REFERENCES STV202311139__DWH.dm_transactions(transaction_id),
     account_from int not null REFERENCES STV202311139__DWH.dm_accounts(account_id),
@@ -74,23 +74,11 @@ CREATE TABLE IF NOT EXISTS STV202311139__DWH.fct_trans_amount (
     country_id int not null REFERENCES STV202311139__DWH.dm_countries(country_id),
     transaction_dt timestamp not null,
     amount int not null,
-    load_dt timestamp not null,
-    load_src varchar(20) not null
-)
-ORDER BY transaction_dt
-SEGMENTED BY HASH(transaction_id, account_from, account_to, currency_id) ALL NODES
-PARTITION BY transaction_dt::date
-GROUP BY calendar_hierarchy_day(transaction_dt::date, 3, 2);
-
-CREATE TABLE IF NOT EXISTS STV202311139__DWH.fct_trans_status (
-    id int not null primary key enabled,
-    transaction_id int not null REFERENCES STV202311139__DWH.dm_transactions(transaction_id),
-    transaction_dt timestamp not null,
     transaction_status varchar(30),
     load_dt timestamp not null,
     load_src varchar(20) not null
 )
 ORDER BY transaction_dt, transaction_status
-SEGMENTED BY HASH(transaction_id, transaction_dt) ALL NODES
+SEGMENTED BY HASH(transaction_id, account_from, account_to, currency_id, transaction_status) ALL NODES
 PARTITION BY transaction_dt::date
 GROUP BY calendar_hierarchy_day(transaction_dt::date, 3, 2);

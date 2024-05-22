@@ -20,7 +20,5 @@ SELECT HASH(dc.currency_id, dw.currency_id, c.update_dt) AS id
     ON dw.currency_code = c.currency_code_with
  WHERE NOT EXISTS (SELECT 1
                      FROM STV202311139__DWH.fct_currency_exchange fce
-                    WHERE fce.currency_id = dc.currency_id
-                      AND fce.currency_id_with = dw.currency_id
-                      AND fce.update_dt = c.update_dt
+                    WHERE fce.id = HASH(dc.currency_id, dw.currency_id, c.update_dt)
                   );

@@ -26,7 +26,7 @@ def load_data_to_dds_dag():
         
         fill_facts = [
             create_dds_task(vertica_params, dirname, sql_params, obj_name, logger)
-            for obj_name in ("fct_currency_exchange", "fct_trans_amount", "fct_trans_status")
+            for obj_name in ("fct_currency_exchange", "fct_trans_amount_status")
         ]
 
         dm_before_trans >> dm_trans >> fill_facts

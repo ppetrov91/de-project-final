@@ -17,5 +17,5 @@ SELECT HASH(v.account_number) AS account_id
        ) v
  WHERE NOT EXISTS (SELECT 1
                      FROM STV202311139__DWH.dm_accounts a
-                    WHERE a.account_number = v.account_number
+                    WHERE a.account_id = HASH(v.account_number)
                   );
