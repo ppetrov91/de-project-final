@@ -18,5 +18,5 @@ SELECT HASH(v.operation_id) AS transaction_id
     ON tt.trans_type = v.transaction_type
  WHERE NOT EXISTS (SELECT 1
                      FROM STV202311139__DWH.dm_transactions tr
-                    WHERE tr.id = HASH(v.operation_id)
+                    WHERE tr.transaction_id = HASH(v.operation_id)
                   );
