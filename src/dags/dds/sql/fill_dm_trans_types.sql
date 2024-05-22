@@ -5,7 +5,7 @@ SELECT HASH(v.trans_type) AS trans_type_id
      , 'pg' AS load_src
   FROM (SELECT DISTINCT t.transaction_type AS trans_type
           FROM STV202311139__STAGING.transactions t
-         WHERE t.transaction_dt BETWEEN :ds1 AND :ds2
+         WHERE t.transaction_dt BETWEEN :dt1 AND :dt2
        ) v
  WHERE NOT EXISTS (SELECT 1
                      FROM STV202311139__DWH.dm_trans_types tr

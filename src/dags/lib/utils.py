@@ -18,6 +18,9 @@ def get_db_params():
 
     pg_params["port"] = int(pg_params["port"])
     pg_params["sslmode"] = "require"
+
+    vertica_params["autocommit"] = True
+    vertica_params["use_prepared_statements"] = False
     vertica_params["port"] = int(vertica_params["port"])
     vertica_params["database"] = vertica_params["dbname"]
     del vertica_params["dbname"]
@@ -35,6 +38,14 @@ def get_params():
     dt_stop = dt_start + timedelta(days=1) - timedelta(seconds=1)
     return pg_params, vertica_params, pg_output_dir, {"dt1": dt_start, "dt2": dt_stop}
 
+def create_dds_task(vertica_params, sql_dirpath, sql_params, obj_name, logger):
+    @task(task_id=f"fill_{obj_name}")
+    def f():
+        vertica_client = VerticaClient(vertica_params, logger)
+        sql_filepath = os.path.join(sql_dirpath, f"sql/fill_{obj_name}.sql")
+        vertica_client.exec_query(sql_filepath, sql_params)
+    
+    return f()
 
 def create_stg_task(pg_params, vertica_params, sql_dirpath, sql_params, output_dirpath, obj_name, logger):
     @task(task_id=f"load_{obj_name}_data_from_pg")

@@ -5,9 +5,8 @@ from airflow.operators.empty import EmptyOperator
 from airflow.decorators import dag, task_group
 from lib.utils import create_stg_task, get_params
 
+
 logger = logging.getLogger(__name__)
-
-
 
 @dag(
     dag_id = 'load_to_staging', 
@@ -27,8 +26,7 @@ def load_data_to_stg_dag():
                          sql_params, output_dirpath, obj_name, logger) 
          for obj_name in ("currencies", "transactions")]
 
-    t_start = EmptyOperator(task_id="start")
-    t_finish = EmptyOperator(task_id="finish")
+    t_start, t_finish = (EmptyOperator(task_id=tn) for tn in ("start", "finish"))
     t_start >> load_data_to_stg() >> t_finish
 
 dag = load_data_to_stg_dag()
