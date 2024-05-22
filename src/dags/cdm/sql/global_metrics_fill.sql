@@ -1,18 +1,16 @@
 INSERT INTO STV202311139__DWH.global_metrics_copy
 WITH ds AS (
-SELECT fts.transaction_dt::date AS date_update
-     , fts.transaction_id
+SELECT fta.transaction_dt::date AS date_update
+     , fta.transaction_id
      , fta.account_from
      , fta.amount
      , fta.currency_id
      , dc.currency_code
-  FROM STV202311139__DWH.fct_trans_status fts
-  JOIN STV202311139__DWH.fct_trans_amount fta
-    ON fta.transaction_id = fts.transaction_id
+  FROM STV202311139__DWH.fct_trans_amount_status fta
   JOIN STV202311139__DWH.dm_currencies dc
     ON dc.currency_id = fta.currency_id
- WHERE fts.transaction_status = 'done'
-   AND fts.transaction_dt BETWEEN :dt1 AND :dt2
+ WHERE fta.transaction_status = 'done'
+   AND fta.transaction_dt BETWEEN :dt1 AND :dt2
 ),
 rp AS (
 SELECT d.date_update
