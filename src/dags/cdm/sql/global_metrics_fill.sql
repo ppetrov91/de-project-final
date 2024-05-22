@@ -1,3 +1,4 @@
+INSERT INTO STV202311139__DWH.global_metrics_copy
 WITH ds AS (
 SELECT fts.transaction_dt::date AS date_update
      , fts.transaction_id
@@ -41,7 +42,6 @@ SELECT d.date_update
   FROM ds d
  WHERE d.currency_code = 420
 )
-INSERT INTO STV202311139__DWH.global_metrics_copy
 SELECT r.date_update
      , r.currency_from
      , SUM(r.amount) AS amount_total
