@@ -16,7 +16,7 @@ from lib.utils import create_dds_task, get_params
 )
 def load_data_to_dds_dag():
     @task_group(group_id="load_data_from_stg_to_dds")
-    def load_dimensions_data(vertica_params, sql_params, logger):
+    def load_data(vertica_params, sql_params, logger):
         dm_before_trans = [
             create_dds_task(vertica_params, dirname, sql_params, obj_name, logger)
             for obj_name in ("dm_accounts", "dm_countries", "dm_currencies", "dm_trans_types")
@@ -34,6 +34,6 @@ def load_data_to_dds_dag():
     _, vertica_params, _, sql_params = get_params()
     logger, dirname = logging.getLogger(__name__), os.path.dirname(__file__)
     t_start, t_finish = (EmptyOperator(task_id=tn) for tn in ("start", "finish"))
-    t_start >> load_dimensions_data(vertica_params, sql_params, logger) >> t_finish
+    t_start >> load_data(vertica_params, sql_params, logger) >> t_finish
 
 dag = load_data_to_dds_dag()

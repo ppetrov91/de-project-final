@@ -38,6 +38,17 @@ def get_params():
     dt_stop = dt_start + timedelta(days=1) - timedelta(seconds=1)
     return pg_params, vertica_params, pg_output_dir, {"dt1": dt_start, "dt2": dt_stop}
 
+def create_cdm_task(vertica_params, sql_dirpath, sql_params, obj_name, logger):
+    @task(task_id=f"fill_{obj_name}")
+    def f():
+        vertica_client = VerticaClient(vertica_params, logger)
+
+        for qt in ("copy_drop_partitions", "fill", "swap_partitions"):
+            sql_filepath = os.path.join(sql_dirpath, f"sql/{obj_name}_{qt}.sql")
+            vertica_client.exec_query(sql_filepath, sql_params)
+
+    return f()
+    
 def create_dds_task(vertica_params, sql_dirpath, sql_params, obj_name, logger):
     @task(task_id=f"fill_{obj_name}")
     def f():

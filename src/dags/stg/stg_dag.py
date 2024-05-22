@@ -6,8 +6,6 @@ from airflow.decorators import dag, task_group
 from lib.utils import create_stg_task, get_params
 
 
-logger = logging.getLogger(__name__)
-
 @dag(
     dag_id = 'load_to_staging', 
     schedule_interval='@daily',
@@ -18,7 +16,7 @@ logger = logging.getLogger(__name__)
 )
 def load_data_to_stg_dag():
     @task_group(group_id="load_data_from_pg_to_stg")
-    def load_data_to_stg():
+    def load_data_to_stg(logger):
         pg_params, vertica_params, output_dirpath, sql_params = get_params()
         dirname = os.path.dirname(__file__)
         
@@ -26,7 +24,8 @@ def load_data_to_stg_dag():
                          sql_params, output_dirpath, obj_name, logger) 
          for obj_name in ("currencies", "transactions")]
 
+    logger = logging.getLogger(__name__)
     t_start, t_finish = (EmptyOperator(task_id=tn) for tn in ("start", "finish"))
-    t_start >> load_data_to_stg() >> t_finish
+    t_start >> load_data_to_stg(logger) >> t_finish
 
 dag = load_data_to_stg_dag()
