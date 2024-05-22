@@ -11,3 +11,6 @@ ORDER BY date_update, currency_from
 SEGMENTED BY hash(date_update, currency_from) all nodes
 PARTITION BY date_update
 GROUP BY calendar_hierarchy_day(date_update, 3, 2);
+
+CREATE TABLE IF NOT EXISTS STV202311139__DWH.global_metrics_copy
+  LIKE STV202311139__DWH.global_metrics INCLUDING PROJECTIONS;

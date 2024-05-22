@@ -1,0 +1,1 @@
+truncate table STV202311139__DWH.global_metrics_copy;
