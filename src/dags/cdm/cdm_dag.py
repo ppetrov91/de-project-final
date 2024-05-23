@@ -5,6 +5,8 @@ from airflow.operators.empty import EmptyOperator
 from airflow.decorators import dag, task_group
 from lib.utils import create_cdm_task, get_params
 
+# Dashboard screenshot coud be found in 
+# https://github.com/ppetrov91/de-project-final/blob/main/src/img/dashboard.png
 
 @dag(
     dag_id = 'load_to_cdm', 
