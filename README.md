@@ -51,6 +51,4 @@
 4. Меняем местами партиции global_metrics и global_metrics_copy. 
 
 ### Dashboard
-По непонятной причине директория img не подхватывается.
-
-Картинку можно найти тут: github.com/ppetrov91/de-project-final/blob/main/src/img/dashboard.png
+1. Результат в de-project-final УЗ ppetrov91
