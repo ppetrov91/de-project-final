@@ -49,3 +49,8 @@
 2. Удаляется партиция за указанную дату в global_metrics_copy.
 3. Выполняется запрос наполнения global_metrics_copy за указанную дату, получаем секцию с новыми данными.
 4. Меняем местами партиции global_metrics и global_metrics_copy. 
+
+### Dashboard
+По непонятной причине директория img не подхватывается.
+
+Картинку можно найти тут: https://github.com/ppetrov91/de-project-final/blob/main/src/img/dashboard.png
