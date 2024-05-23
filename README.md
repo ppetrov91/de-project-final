@@ -53,4 +53,4 @@
 ### Dashboard
 По непонятной причине директория img не подхватывается.
 
-Картинку можно найти тут: https://github.com/ppetrov91/de-project-final/blob/main/src/img/dashboard.png
+Картинку можно найти тут: github.com/ppetrov91/de-project-final/blob/main/src/img/dashboard.png
