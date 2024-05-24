@@ -36,7 +36,7 @@ def get_sql_params():
     dt_stop = dt_start + timedelta(days=1) - timedelta(seconds=1)
     return {"dt1": dt_start, "dt2": dt_stop}
 
-def import_stg_data(sql_dirpath, sql_params, obj_name, logger):
+def export_stg_data(sql_dirpath, sql_params, obj_name, logger):
     pg_client = PGClient(get_pg_params(), logger)
     sql_filepath = os.path.join(sql_dirpath, f"get_{obj_name}.sql")
     output_filepath = os.path.join(Variable.get("PG_OUTPUT_DIR", ""), f"{obj_name}.csv")
@@ -50,7 +50,7 @@ def create_tasks(layer_type, sql_dirpath, query_types, obj_name, logger):
         vertica_client = VerticaClient(get_vertica_params(), logger)
 
         if layer_type == "stg":
-            csv_filepath = import_stg_data(sql_dirpath, sql_params, obj_name, logger)
+            csv_filepath = export_stg_data(sql_dirpath, sql_params, obj_name, logger)
 
         for qt in query_types:
             sql_filepath = os.path.join(sql_dirpath, f"{qt}_{obj_name}.sql")
