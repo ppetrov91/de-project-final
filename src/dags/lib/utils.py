@@ -27,40 +27,39 @@ def get_vertica_params():
 
     return vertica_params
 
-def get_params():
-    pg_params = get_pg_params()
-    vertica_params = get_vertica_params()
-    pg_output_dir = Variable.get("PG_OUTPUT_DIR", "")
+def get_sql_params():
     dt_start = Variable.get("LOAD_DATE", "0001-01-01")
     dt_start = dt_start != "0001-01-01" and datetime.strptime(dt_start,'%Y-%m-%d') or \
                datetime.now(pytz.timezone('Europe/Moscow'))
 
     dt_start = dt_start - timedelta(days=1)
     dt_stop = dt_start + timedelta(days=1) - timedelta(seconds=1)
-    return pg_params, vertica_params, pg_output_dir, {"dt1": dt_start, "dt2": dt_stop}
+    return {"dt1": dt_start, "dt2": dt_stop}
 
-def create_tasks(vertica_params, sql_dirpath, query_types, sql_params, obj_name, logger):
+def import_stg_data(sql_dirpath, sql_params, obj_name, logger):
+    pg_client = PGClient(get_pg_params(), logger)
+    sql_filepath = os.path.join(sql_dirpath, f"get_{obj_name}.sql")
+    output_filepath = os.path.join(Variable.get("PG_OUTPUT_DIR", ""), f"{obj_name}.csv")
+    pg_client.load_data(sql_filepath, sql_params, output_filepath)
+    return output_filepath
+
+def create_tasks(layer_type, sql_dirpath, query_types, obj_name, logger):
     @task(task_id=f"fill_{obj_name}")
     def f():
-        vertica_client = VerticaClient(vertica_params, logger)
-        
+        csv_filepath, sql_params = "", get_sql_params()
+        vertica_client = VerticaClient(get_vertica_params(), logger)
+
+        if layer_type == "stg":
+            csv_filepath = import_stg_data(sql_dirpath, sql_params, obj_name, logger)
+
         for qt in query_types:
-            sql_filepath = os.path.join(sql_dirpath, f"sql/{qt}_{obj_name}.sql")
-            vertica_client.exec_query(sql_filepath, sql_params)
-    
-    return f()
+            sql_filepath = os.path.join(sql_dirpath, f"{qt}_{obj_name}.sql")
 
-def create_stg_task(pg_params, vertica_params, sql_dirpath, sql_params, output_dirpath, obj_name, logger):
-    @task(task_id=f"load_{obj_name}_data_from_pg")
-    def f():
-        output_filepath = os.path.join(output_dirpath, f"{obj_name}.csv")
-        
-        pg_client = PGClient(pg_params, logger)
-        sql_filepath = os.path.join(sql_dirpath, f"sql/get_{obj_name}.sql")
-        pg_client.load_data(sql_filepath, sql_params, output_filepath)
+            if qt == "copy":
+                with open(csv_filepath) as f:
+                    vertica_client.exec_query(sql_filepath, None, {"copy_stdin": f})
+                    continue
 
-        vertica_client = VerticaClient(vertica_params, logger)
-        sql_filepath = os.path.join(sql_dirpath, f"sql/save_{obj_name}.sql")
-        vertica_client.import_data(sql_filepath, output_filepath)
+            vertica_client.exec_query(sql_filepath, sql_params, {})
 
     return f()

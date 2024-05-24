@@ -3,7 +3,7 @@ import pendulum
 import os
 from airflow.operators.empty import EmptyOperator
 from airflow.decorators import dag, task_group
-from lib.utils import create_stg_task, get_params
+from lib.utils import create_tasks
 
 
 @dag(
@@ -17,11 +17,10 @@ from lib.utils import create_stg_task, get_params
 def load_data_to_stg_dag():
     @task_group(group_id="load_data_from_pg_to_stg")
     def load_data_to_stg(logger):
-        pg_params, vertica_params, output_dirpath, sql_params = get_params()
-        dirname = os.path.dirname(__file__)
-        
-        [create_stg_task(pg_params, vertica_params, dirname, 
-                         sql_params, output_dirpath, obj_name, logger) 
+        sql_dirpath = os.path.join(os.path.dirname(__file__), "sql")
+        layer_type, query_types = "stg", ("copy", )
+
+        [create_tasks(layer_type, sql_dirpath, query_types, obj_name, logger) 
          for obj_name in ("currencies", "transactions")]
 
     logger = logging.getLogger(__name__)
